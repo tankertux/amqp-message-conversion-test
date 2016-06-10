@@ -19,6 +19,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter")
     compile 'org.springframework.amqp:spring-rabbit:1.6.0.RELEASE'
     compile 'org.springframework.amqp:spring-amqp:1.6.0.RELEASE'
+    compile 'org.apache.commons:commons-lang3:3.4'
 
 
     testCompile 'junit:junit:4.12'

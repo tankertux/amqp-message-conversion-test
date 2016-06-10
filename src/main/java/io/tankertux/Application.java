@@ -6,6 +6,8 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.ClassMapper;
 import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -69,5 +71,25 @@ public class Application {
         DefaultClassMapper classMapper = new DefaultClassMapper();
         classMapper.setDefaultType(TankertuxEvent.class);
         return classMapper;
+    }
+
+    @Bean
+    public SimpleMessageListenerContainer listenerContainer(){
+        SimpleMessageListenerContainer listenerContainer = new SimpleMessageListenerContainer();
+        listenerContainer.setConnectionFactory(connectionFactory());
+        listenerContainer.setMessageConverter(messageConverter());
+        listenerContainer.setConcurrentConsumers(2);
+        listenerContainer.setQueues(queue());
+        listenerContainer.setMessageListener(messageListenerAdapter());
+        return listenerContainer;
+    }
+
+    @Bean
+    public MessageListener messageListenerAdapter() {
+        return new MessageListenerAdapter(eventHandler(), messageConverter());
+    }
+
+    private TankertuxEventHandler eventHandler() {
+        return new TankertuxEventHandler();
     }
 }
