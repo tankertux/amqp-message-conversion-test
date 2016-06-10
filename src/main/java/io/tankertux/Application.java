@@ -1,6 +1,6 @@
 package io.tankertux;
 
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -28,6 +28,7 @@ public class Application {
     public RabbitTemplate rabbitTemplate(){
         RabbitTemplate template = new RabbitTemplate(connectionFactory());
         template.setMessageConverter(messageConverter());
+        template.setExchange(exchange().getName());
         return template;
     }
 
@@ -51,6 +52,16 @@ public class Application {
     @Bean(name = "event.queue")
     public Queue queue(){
         return new Queue("event.queue");
+    }
+
+    @Bean
+    public Exchange exchange(){
+        return new TopicExchange("event.topic.exchange");
+    }
+
+    @Bean
+    public Binding binding(){
+        return BindingBuilder.bind(queue()).to(exchange()).with("*.tankertux").noargs();
     }
 
     @Bean

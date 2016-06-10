@@ -19,7 +19,11 @@ public class EventEmitter {
 
     @Scheduled(fixedRate = 5000L)
     public void emit() throws Exception {
-        template.convertAndSend("event.queue", factory.getObject());
+        template.convertAndSend("io.tankertux", factory.getObject());
+        System.out.println("Message sent");
+        template.convertAndSend("io.else", factory.getObject());
+        System.out.println("Message sent");
+        template.convertAndSend("org.tankertux", factory.getObject());
         System.out.println("Message sent");
     }
 
